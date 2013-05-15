@@ -55,7 +55,7 @@ void EmojiFactoryManager::Init() {
 
   char *emoji_libraries = new char[PROPERTY_VALUE_MAX];
   int len = property_get("ro.config.libemoji", emoji_libraries, "");
-  // LOGD("ro.config.libemoji: %s", emoji_libraries);
+  // ALOGD("ro.config.libemoji: %s", emoji_libraries);
   if (len > 0) {
     char *saveptr, *ptr;
     ptr = emoji_libraries;
@@ -79,7 +79,7 @@ void EmojiFactoryManager::TryRegisterEmojiFactory(const char *library_name) {
     if (error_str) {
       error_str = "Unknown reason";
     }
-    LOGE("Failed to load shared library %s: %s", library_name, error_str);
+    ALOGE("Failed to load shared library %s: %s", library_name, error_str);
     return;
   }
   EmojiFactory *(*get_emoji_factory)() =
@@ -90,14 +90,14 @@ void EmojiFactoryManager::TryRegisterEmojiFactory(const char *library_name) {
     if (error_str) {
       error_str = "Unknown reason";
     }
-    LOGE("Failed to call GetEmojiFactory: %s", error_str);
+    ALOGE("Failed to call GetEmojiFactory: %s", error_str);
     dlclose(handle);
     return;
   }
 
   EmojiFactory *factory = (*get_emoji_factory)();
   if (NULL == factory) {
-    LOGE("Returned factory is NULL");
+    ALOGE("Returned factory is NULL");
     dlclose(handle);
     return;
   }
@@ -108,7 +108,7 @@ void EmojiFactoryManager::TryRegisterEmojiFactory(const char *library_name) {
   for (size_t i = 0; i < size; ++i) {
     EmojiFactory *f = g_factories->itemAt(i);
     if (!strcmp(name, f->Name())) {
-      LOGE("Same EmojiFactory was found: %s", name);
+      ALOGE("Same EmojiFactory was found: %s", name);
       delete factory;
       dlclose(handle);
       return;
